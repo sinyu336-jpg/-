@@ -3,46 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👭 姊妹情 100 題究極大測驗 🐟🐎🐥</title>
+    <title>👭 姊妹情：百題靈魂大測驗 🐟🐎🐥</title>
     <style>
-        :root { --main-pink: #ff69b4; --bg-pink: #fff5f8; --dark-pink: #d81b60; --kenny-blue: #4a90e2; }
+        :root { --main-pink: #ff69b4; --bg-pink: #fff5f8; --dark-pink: #d81b60; }
         body { font-family: -apple-system, "PingFang HK", sans-serif; background-color: var(--bg-pink); color: #333; margin: 0; padding: 15px; }
         .container { max-width: 650px; margin: 10px auto; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: var(--main-pink); font-size: 1.5em; margin-bottom: 5px; }
         .subtitle { text-align: center; color: #888; font-size: 0.8em; margin-bottom: 20px; }
         .info-bar { background: #fff0f5; padding: 10px; border-radius: 10px; text-align: center; font-size: 0.9em; color: var(--dark-pink); margin-bottom: 20px; border: 1px dashed var(--main-pink); }
-        .q-box { margin-bottom: 30px; border-bottom: 1px solid #ffe4ed; padding-bottom: 20px; }
-        .q-title { font-weight: bold; font-size: 1.1em; color: var(--dark-pink); margin-bottom: 12px; display: block; }
-        .option { display: block; background: #fdf2f7; margin: 10px 0; padding: 14px; border-radius: 12px; cursor: pointer; border: 1px solid transparent; }
-        .option:hover { background: #ffdee9; }
+        .q-box { margin-bottom: 30px; border-bottom: 1px dotted #ffc1d6; padding-bottom: 20px; }
+        .q-title { font-weight: bold; font-size: 1.1em; color: var(--dark-pink); margin-bottom: 12px; display: block; line-height: 1.4; }
+        .option { display: block; background: #fdf2f7; margin: 10px 0; padding: 14px; border-radius: 12px; cursor: pointer; transition: 0.2s; }
+        .option:active { background: #ffdee9; }
         input { margin-right: 12px; transform: scale(1.3); }
-        #submit-btn { width: 100%; padding: 20px; background: linear-gradient(45deg, #ff69b4, #4a90e2); color: white; border: none; border-radius: 15px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        #result { display: none; margin-top: 25px; padding: 25px; border-radius: 20px; text-align: center; border: 3px solid var(--main-pink); background: #fffbff; }
+        #submit-btn { width: 100%; padding: 20px; background: linear-gradient(45deg, #ff69b4, #ff1493); color: white; border: none; border-radius: 15px; font-size: 1.2em; font-weight: bold; cursor: pointer; }
+        #result { display: none; margin-top: 25px; padding: 25px; border-radius: 20px; text-align: center; border: 3px solid var(--main-pink); background: #fff; }
         .score-num { font-size: 4em; font-weight: bold; color: var(--main-pink); display: block; }
-        .comment { font-size: 1.1em; font-weight: bold; margin-top: 10px; color: #444; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>👭 姊妹情：百題煉獄挑戰 🐟🐎🐥</h1>
-    <p class="subtitle">全員到齊版：ceci / 7仔 / Kitty / JJ / Kenny</p>
-    
-    <div class="info-bar">✨ 每次刷新：隨機從 100 題抽 25 題 ✨</div>
-    
+    <h1>👭 姊妹情：百題靈魂大測驗 🐟🐎🐥</h1>
+    <p class="subtitle">全員 100 題庫：ceci / 7仔 / Kitty / JJ / Kenny</p>
+    <div class="info-bar">每次刷新：從 100 題中隨機抽取 20 題，題題不同！</div>
     <div id="quiz-list"></div>
-    
     <button id="submit-btn" onclick="checkScore()">提交！領取友情報告單</button>
     <div id="result"></div>
-    <button id="retry-btn" style="display:none; width:100%; margin:20px 0; padding:12px; border-radius:12px; border:1px solid #ddd; background:#fff; cursor:pointer;" onclick="location.reload()">再戰一次</button>
+    <button id="retry-btn" style="display:none; width:100%; margin:20px 0; padding:12px; border-radius:12px; border:1px solid #ddd; background:#fff; cursor:pointer;" onclick="location.reload()">不服氣？刷新再挑戰</button>
 </div>
 
 <script>
 const fullBank = [
-    // --- ceci 專區 ---
-    { q: "ceci 卜思詩在群組最著名的「緊急物資」求助是什麼？", opts: ["借兩塊 M 巾", "借原子筆", "借充電線", "借 $100"], ans: [0], type: "single" },
-    { q: "ceci 提到的「靚仔學生」為什麼讓她印象深刻？", opts: ["把送的筆芯供奉起來", "把送的筆芯弄斷", "把筆芯拿去送女仔", "把筆芯吃了"], ans: [0], type: "single" },
-    { q: "ceci 每次想買文具或可愛東西時，通常會說什麼？", opts: ["想買嚟減壓", "好平呀買啦", "送比學生", "幫我淘寶"], ans: [0], type: "single" },
-    { q: "ceci 喜歡的 P 助與兔兔系列，其實最吸引她的是？", opts: ["那隻貓的表情", "兔子的耳朵", "P助的呆臉", "不，她其實喜歡布甸狗"], ans: [0], type: "single" },
-
-    // --- 7 仔專
+    // --- ceci 專屬 (1-20) ---
+    { q: "ceci 卜思詩在 2019 年提到想送陳俊宇什麼作為情侶款？", opts: ["手機殼 (Case)", "情侶裝", "情侶鞋", "情侶手錶"], ans: [0] },
