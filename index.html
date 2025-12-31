@@ -3,85 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👭 女校女生與 7-11 友情大測驗 🐟🐎🐥</title>
+    <title>👭 姊妹回憶隨機大挑戰 🐟🐎🐥</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fff5f8; color: #333; line-height: 1.6; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #ff69b4; }
-        .question { margin-bottom: 25px; border-bottom: 1px dashed #ffd1dc; padding-bottom: 15px; }
-        .question-text { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; color: #d81b60; }
-        .options { list-style: none; padding: 0; }
-        .option { background: #fff0f5; margin: 8px 0; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .option:hover { background: #ffc1d6; }
-        input[type="radio"], input[type="checkbox"] { margin-right: 10px; }
-        #submit-btn { display: block; width: 100%; padding: 15px; background-color: #ff69b4; color: white; border: none; border-radius: 10px; font-size: 1.2em; cursor: pointer; margin-top: 20px; }
-        #submit-btn:hover { background-color: #e91e63; }
-        #result { margin-top: 20px; padding: 20px; border-radius: 10px; display: none; text-align: center; font-size: 1.3em; font-weight: bold; }
-        .hint { font-size: 0.9em; color: #888; font-style: italic; margin-top: 5px; }
+        :root { --main-pink: #ff69b4; --bg-pink: #fff5f8; }
+        body { font-family: -apple-system, "PingFang HK", sans-serif; background-color: var(--bg-pink); color: #333; margin: 0; padding: 15px; }
+        .container { max-width: 600px; margin: 10px auto; background: white; padding: 25px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        h1 { text-align: center; color: var(--main-pink); font-size: 1.6em; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #888; font-size: 0.85em; margin-bottom: 25px; }
+        .refresh-note { text-align: center; color: #ff1493; font-weight: bold; font-size: 0.9em; margin-bottom: 20px; }
+        .q-box { margin-bottom: 30px; border-bottom: 1px solid #ffe4ed; padding-bottom: 20px; }
+        .q-title { font-weight: bold; font-size: 1.1em; color: #d81b60; margin-bottom: 15px; display: block; }
+        .option { display: block; background: #fdf2f7; margin: 10px 0; padding: 14px; border-radius: 12px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
+        .option:hover { background: #ffdee9; }
+        input { margin-right: 10px; transform: scale(1.2); }
+        #submit-btn { width: 100%; padding: 18px; background: linear-gradient(45deg, #ff69b4, #ff1493); color: white; border: none; border-radius: 15px; font-size: 1.2em; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #result { display: none; margin-top: 25px; padding: 25px; border-radius: 20px; text-align: center; border: 2px solid var(--main-pink); background: #fffbff; }
+        .score-num { font-size: 3em; font-weight: bold; color: var(--main-pink); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>👭 友情大測驗 🐟🐎🐥</h1>
-    <p style="text-align: center;">看看誰才是真正的回憶守護者！</p>
-    <form id="quizForm">
-        <div id="quiz-content"></div>
-        <button type="button" id="submit-btn" onclick="calculateScore()">交卷！看我的友情指數</button>
-    </form>
+    <h1>👭 姊妹情誼隨機挑戰 🐟🐎🐥</h1>
+    <p class="subtitle">每次刷新題目都會變！看誰才是真閨蜜</p>
+    <p class="refresh-note">✨ 題庫隨機抽取 15 題 ✨</p>
+    
+    <div id="quiz-list"></div>
+    
+    <button id="submit-btn" onclick="checkScore()">交卷！測試塑料濃度</button>
     <div id="result"></div>
+    <button id="retry-btn" style="display:none; width:100%; margin-top:10px; padding:10px; border-radius:10px; border:1px solid #ccc; cursor:pointer;" onclick="location.reload()">不服氣？刷新再戰！</button>
 </div>
 
 <script>
-    const questions = [
-        // 這裡放入前兩次生成的 40 題數據 (簡化示例，已整合關鍵題目)
-        { q: "在 2019 年初期，ceci 曾提到要送什麼禮物給陳俊宇？", options: ["情侶手機殼", "藍牙耳機", "鉛筆", "貓咪襪子"], correct: 0, type: "single" },
-        { q: "Kitty 在 2019 年 3 月去了哪裡穿耳洞？", options: ["潮特", "Mabelle", "深水埗", "葵涌廣場"], correct: 0, type: "single" },
-        { q: "ceci 卜思詩對哪種物品有明顯的「收集癖」？", options: ["文具 (特別是筆)", "口罩", "卡牌", "公仔"], correct: 0, type: "single" },
-        { q: "ceci 在前往 Little JJ 的 studio 途中發生了什麼尷尬事？", options: ["忘記帶 M 巾", "搭錯巴士", "忘了生日", "弄丟筆"], correct: 0, type: "single" },
-        { q: "是非題：Kitty 覺得 $123 穿耳洞非常昂貴。", options: ["正確", "錯誤"], correct: 1, type: "single" },
-        { q: "2025 聖誕飯局中，『有 J 』的人每人付多少？", options: ["$206", "$134", "$150", "$180"], correct: 1, type: "single" },
-        { q: "多選題：ceci 卜思詩偏愛的可愛角色？", options: ["P助", "粉紅兔兔", "塗改帶上的貓", "布甸狗"], correct: [0, 1, 2], type: "multi" }
-        // ... 此處可根據需要手動添加完整 40 題
-    ];
+// 完整大題庫 (這裡放了所有題目)
+const fullBank = [
+    { q: "2019年初，ceci提到要送什麼給陳俊宇？", opts: ["情侶手機殼", "藍牙耳機", "中華牌鉛筆", "貓咪襪子"], ans: [0], type: "single" },
+    { q: "Kitty 在 2019 年 3 月去了哪裡釘耳屎(穿耳)？", opts: ["潮特 (Trend Plaza)", "Mabelle", "淘寶", "深水埗"], ans: [0], type: "single" },
+    { q: "ceci 對哪種物品有明顯的「收集癖」？", opts: ["文具 (特別是筆)", "手機殼", "口罩", "卡牌"], ans: [0], type: "single" },
+    { q: "ceci 前往 Little JJ 的 studio 途中發生了什麼尷尬事？", opts: ["忘記帶衛生棉 (M巾)", "搭錯巴士", "忘了生日", "弄丟筆"], ans: [0], type: "single" },
+    { q: "姊妹們覺得麥當勞哪種產品有「藥水味」？", opts: ["野莓派", "蘋果派", "搖搖薯條", "朱古力批"], ans: [0], type: "single" },
+    { q: "誰欠錢不還卻能去「泰國」旅遊？", opts: ["大雄", "老表", "阿正", "陳俊宇"], ans: [0], type: "single" },
+    { q: "Kenny 余錫鴻說溝不到女的話，對方要賠多少錢？", opts: ["150 萬 (1球半)", "10 萬", "一餐飯", "50 萬"], ans: [0], type: "single" },
+    { q: "是非：Kitty 穿耳洞的 $123 其實包含兩對耳環。", opts: ["正確", "錯誤"], ans: [0], type: "single" },
+    { q: "多選：ceci 買過哪些角色文具？", opts: ["P助", "粉紅兔兔", "塗改帶貓", "布甸狗"], ans: [0, 1, 2], type: "multi" },
+    { q: "7 仔鍾淑儀分享過什麼排泄身體狀況？", opts: ["屙了「羊咩屎」", "喉嚨痛", "發炎", "痠痛"], ans: [0], type: "single" },
+    { q: "Little JJ 曾提到下午回 studio 做什麼？", opts: ["整餅 (烘焙)", "教琴", "清潔", "面試"], ans: [0], type: "single" },
+    { q: "2020 年 ceci 猶豫轉工，是因為 7 仔？", opts: ["加了人工", "要結婚", "買了樓", "要辭職"], ans: [0], type: "single" },
+    { q: "7 仔想請教「阿正」關於什麼問題？", opts: ["iCloud 備份", "股票", "整餅", "考公務員"], ans: [0], type: "single" },
+    { q: "ceci 描述難教學生給她的感覺是？", opts: ["一啖屎一啖砂糖", "完全沒救", "勤奮", "天才"], ans: [0], type: "single" },
+    { q: "Little JJ 說「有啲想 post」，是指想發布？", opts: ["飯局照片或截圖", "整餅作品", "學生成績", "穿耳洞"], ans: [0], type: "single" },
+    { q: "是非：ceci 喜歡 P 助系列中的「貓」超過「兔子」。", opts: ["正確", "錯誤"], ans: [0], type: "single" },
+    { q: "多選：2025 飯局出現過的關鍵詞？", opts: ["FPS", "1球半", "620/3", "比特幣"], ans: [0, 1, 2], type: "multi" },
+    { q: "多選：哪些人參與過「老表」的八卦討論？", opts: ["ceci", "7 仔", "Little JJ", "陳俊宇"], ans: [0, 1, 2], type: "multi" },
+    { q: "是非：Little JJ 的主要技能之一是烘焙 (整餅)。", opts: ["正確", "錯誤"], ans: [0], type: "single" },
+    { q: "2025 聖誕飯局，『有 J 』的人付多少？", opts: ["$134", "$206", "$150", "$180"], ans: [0], type: "single" }
+];
 
-    const quizContent = document.getElementById('quiz-content');
-    questions.forEach((q, index) => {
-        let html = `<div class="question">
-            <div class="question-text">${index + 1}. ${q.q}</div>
-            <ul class="options">`;
-        
-        q.options.forEach((opt, optIndex) => {
-            const inputType = q.type === "single" ? "radio" : "checkbox";
-            const name = `q${index}`;
-            html += `<li class="option">
-                <input type="${inputType}" name="${name}" value="${optIndex}"> ${opt}
-            </li>`;
-        });
-        
-        html += `</ul></div>`;
-        quizContent.innerHTML += html;
+// 打亂陣列的函數
+function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
+
+// 隨機選出 15 題
+const selectedQuestions = shuffle([...fullBank]).slice(0, 15);
+
+const list = document.getElementById('quiz-list');
+selectedQuestions.forEach((item, i) => {
+    // 同時打亂選項
+    let optionsWithIndex = item.opts.map((text, idx) => ({ text, idx }));
+    // 是非題不打亂選項順序，保持 [正確, 錯誤]
+    if (item.opts.length > 2) shuffle(optionsWithIndex);
+
+    let html = `<div class="q-box"><span class="q-title">${i+1}. ${item.q}</span>`;
+    optionsWithIndex.forEach((opt) => {
+        const type = item.type === "single" ? "radio" : "checkbox";
+        html += `<label class="option"><input type="${type}" name="q${i}" value="${opt.idx}"> ${opt.text}</label>`;
     });
+    html += `</div>`;
+    list.innerHTML += html;
+});
 
-    function calculateScore() {
-        let score = 0;
-        questions.forEach((q, index) => {
-            const selected = Array.from(document.querySelectorAll(`input[name="q${index}"]:checked`)).map(i => parseInt(i.value));
-            if (q.type === "single") {
-                if (selected[0] === q.correct) score++;
-            } else {
-                if (JSON.stringify(selected.sort()) === JSON.stringify(q.correct.sort())) score++;
-            }
-        });
+function checkScore() {
+    let score = 0;
+    selectedQuestions.forEach((item, i) => {
+        const checked = Array.from(document.querySelectorAll(`input[name="q${i}"]:checked`)).map(el => parseInt(el.value));
+        if (JSON.stringify(checked.sort()) === JSON.stringify(item.ans.sort())) score++;
+    });
+    
+    const res = document.getElementById('result');
+    const retry = document.getElementById('retry-btn');
+    res.style.display = 'block';
+    retry.style.display = 'block';
+    
+    const percent = (score / selectedQuestions.length) * 100;
+    let comment = "";
+    if (percent >= 90) comment = "👑 妳是我的靈魂伴侶吧！趕快結婚！";
+    else if (percent >= 70) comment = "💖 算妳過關，我們的愛很穩固。";
+    else if (percent >= 40) comment = "🤨 妳是不是很久沒看群組了？";
+    else comment = "🚮 塑料！絕對是塑料姊妹！慢走不送！";
 
-        const resultDiv = document.getElementById('result');
-        resultDiv.style.display = 'block';
-        let message = "";
-        const percentage = (score / questions.length) * 100;
-        
-        if (percentage >= 80) message = "💖 天啊！你們是真愛！";
-        else if (percentage >= 50) message = "😊 算你還有一點良心。";
-        else message = "❄️ 我們的友情是塑料做的嗎？";
-
-        resultDiv.innerHTML = `你的得分：${score} / ${questions.length}<br>${message}`;
-        window.scrollTo(0, document.body.scrollHeight);
+    res.innerHTML = `<span class="score-num">${score}/${selectedQuestions.length}</span><p>${comment}</p>`;
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
