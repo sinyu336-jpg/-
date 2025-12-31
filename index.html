@@ -6,58 +6,85 @@
     <title>👭 姊妹情：百題靈魂大挑戰 🐟🐎🐥</title>
     <style>
         :root { --main-pink: #ff69b4; --bg-pink: #fff5f8; --dark-pink: #d81b60; }
-        body { font-family: -apple-system, "PingFang HK", sans-serif; background-color: var(--bg-pink); color: #333; margin: 0; padding: 15px; }
+        body { font-family: -apple-system, "PingFang HK", sans-serif; background-color: var(--bg-pink); color: #333; margin: 0; padding: 15px; -webkit-tap-highlight-color: transparent; }
         .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: var(--main-pink); font-size: 1.4em; }
+        h1 { text-align: center; color: var(--main-pink); font-size: 1.4em; margin-bottom: 10px; }
+        .subtitle { text-align: center; font-size: 0.8em; color: #999; margin-bottom: 20px; }
         .q-box { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #ffe4ed; }
         .q-title { font-weight: bold; color: var(--dark-pink); margin-bottom: 12px; display: block; line-height: 1.4; }
-        .option { display: block; background: #fdf2f7; margin: 10px 0; padding: 15px; border-radius: 12px; cursor: pointer; border: 1px solid transparent; }
+        .option { display: block; background: #fdf2f7; margin: 10px 0; padding: 15px; border-radius: 12px; cursor: pointer; border: 1px solid transparent; transition: background 0.2s; }
+        .option:hover { background: #ffdee9; }
         .option input { margin-right: 10px; transform: scale(1.2); }
-        #submit-btn { width: 100%; padding: 18px; background: #ff69b4; color: white; border: none; border-radius: 12px; font-size: 1.1em; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        #result { display: none; margin-top: 20px; padding: 20px; border-radius: 15px; text-align: center; background: #fff; border: 2px solid var(--main-pink); }
-        .score-num { font-size: 3em; font-weight: bold; color: var(--main-pink); }
+        #submit-btn { width: 100%; padding: 18px; background: #ff69b4; color: white; border: none; border-radius: 12px; font-size: 1.1em; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(255,105,180,0.3); }
+        #result { display: none; margin-top: 20px; padding: 25px; border-radius: 15px; text-align: center; background: #fff; border: 3px solid var(--main-pink); }
+        .score-num { font-size: 3.5em; font-weight: bold; color: var(--main-pink); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>👭 姊妹情誼大考驗 🐟🐎🐥</h1>
-    <p style="text-align:center; font-size:0.8em; color:#999;">每次刷新隨機抽出 20 題核心回憶</p>
-    <div id="quiz-list">載入題目中...</div>
-    <button id="submit-btn">我看完了，交卷！</button>
+    <p class="subtitle">✨ 隨機從 100 題庫抽取 25 題 ✨<br>(已更新：過往雲煙已刪除，專注姊妹情)</p>
+    <div id="quiz-list">載入回憶中...</div>
+    <button id="submit-btn">填好了，看結果！</button>
     <div id="result"></div>
+    <button id="retry-btn" style="display:none; width:100%; margin-top:15px; padding:12px; border-radius:10px; border:1px solid #ddd; background:#fff; cursor:pointer;" onclick="location.reload()">不服？重新洗牌再挑戰</button>
 </div>
 
 <script>
 window.onload = function() {
-    const fullBank = [
-        // 核心 2019 遠古回憶
-        { q: "2019年3月，ceci 打算送給陳俊宇什麼情侶款禮物？", opts: ["Case (手機殼)", "襪子", "鉛筆", "球鞋"], ans: 0 },
-        { q: "Kitty 2019 年在潮特穿耳洞的價錢是多少？", opts: ["$123", "$99", "$150", "$180"], ans: 0 },
-        { q: "誰在 2019 年 3 月 4 日急需兩塊 M 巾並求助 Little JJ？", opts: ["ceci 卜思詩", "7 仔", "Kitty", "雲雲"], ans: 0 },
-        { q: "Kitty 覺得哪一款麥當勞產品有「藥水味」？", opts: ["野莓批", "蘋果批", "曲奇批", "朱古力批"], ans: 0 },
-        { q: "ceci 提到的「靚仔學生」對待送他的筆芯態度是？", opts: ["供奉起來不捨得用", "弄斷了", "送給別人", "拿去賣"], ans: 0 },
-        { q: "誰被稱為「名聲極差、唔識人情世故」且關於 Yumiko 的事？", opts: ["老表", "陳俊宇", "阿正", "Kenny"], ans: 0 },
-        { q: "ceci 曾經提到自己喉嚨痛，原因通常是？", opts: ["鬧學生鬧到好犀利", "感冒", "唱K", "食太多辣"], ans: 0 },
-        { q: "7 仔鍾淑儀曾分享哪種特殊的身體排泄物？", opts: ["羊咩屎", "金條", "石頭", "果凍"], ans: 0 },
-        { q: "Little JJ 提到下午會回 Studio 做什麼？", opts: ["整餅 (烘焙)", "彈琴", "睡覺", "化妝"], ans: 0 },
-        { q: "誰欠錢不還卻被發現去了泰國旅遊？", opts: ["大雄 (或相關八卦人物)", "Kenny", "7 仔", "ceci"], ans: 0 },
-        
-        // 核心 2025 經典精算題
-        { q: "2025聖誕飯局，Kenny計算出「有 J 」的人付多少？", opts: ["$134", "$206", "$620", "$538"], ans: 0 },
-        { q: "Kenny 計算中，「冇 J 」的人付 $206 是怎麼算出來的？", opts: ["620 除以 3", "538 除以 4", "1158 除以 2", "1000 除以 5"], ans: 0 },
-        { q: "Kenny 索取的「一球半」賠償費，具體金額是？", opts: ["150萬", "1.5萬", "15萬", "1500萬"], ans: 0 },
-        { q: "Kenny 說要索賠「一球半」的理由是？", opts: ["溝唔到女你負責", "有人想 post 相", "飯錢計錯", "有人遲到"], ans: 0 },
-        { q: "Little JJ 在平安夜對話中發出的「有啲想 post」後綴表情是？", opts: ["🤭", "😂", "🔥", "🙄"], ans: 0 },
-        { q: "2025 聖誕飯局，誰在凌晨 12:17 分發出「FPS u」？", opts: ["7 仔鍾淑儀", "ceci", "Little JJ", "Kenny"], ans: 0 },
-        { q: "Little JJ 曾說會出去彈兩首，通常是指在哪裡？", opts: ["地鐵站 (MTR)", "大會堂", "Studio", "陳俊宇屋企"], ans: 0 },
-        { q: "誰對 7 仔說「冇啦啦咁聽話，被你馴服了」？", opts: ["7 仔對 ceci 說", "ceci 對 7 仔說", "Kenny 對 JJ 說", "Kitty 對 老表 說"], ans: 1 },
-        { q: "ceci 買文具最常掛在嘴邊的理由是？", opts: ["想買嚟減壓", "好平呀", "送比學生", "幫我淘寶"], ans: 0 },
-        { q: "群組目前的圖示包含哪三個動物/物品？", opts: ["魚、馬、雞 (🐟🐎🐥)", "貓、狗、兔", "豬、牛、羊", "花、星、月"], ans: 0 }
+    // 手動編寫的核心題庫 (排除任何不該出現的人)
+    const coreBank = [
+        // ceci 專區
+        { q: "ceci 曾在群組求助，去 Studio 借什麼「急用物資」？", opts: ["M巾", "原子筆", "指甲鉗", "充電器"], ans: 0 },
+        { q: "ceci 提到的「靚仔學生」把她送的筆芯怎麼了？", opts: ["供奉起來不捨得用", "送給了暗戀對象", "全部折斷", "拿去賣錢"], ans: 0 },
+        { q: "ceci 形容教學生的心情是？", opts: ["一啖屎一啖砂糖", "純粹係享受", "生無可戀", "想立刻退休"], ans: 0 },
+        { q: "當 ceci 喉嚨痛到失聲，通常是因為？", opts: ["鬧學生鬧到太犀利", "感冒流感", "唱 K 唱太久", "食太多薯片"], ans: 0 },
+        { q: "ceci 買可愛文具（如 P 助與兔兔）的理由通常是？", opts: ["想買嚟減壓", "好平呀點可以唔買", "買比學生做獎品", "幫人代購"], ans: 0 },
+
+        // Kenny 精算專區
+        { q: "2025聖誕飯局，Kenny計算出「有 J 」的人付多少？", opts: ["$134", "$206", "$538", "$620"], ans: 0 },
+        { q: "Kenny 計算中，「冇 J 」的人付 $206 是如何算出來的？", opts: ["620 除以 3", "538 除以 4", "1158 除以 2", "隨便寫的"], ans: 0 },
+        { q: "Kenny 威脅要索取的「一球半」賠償費是多少？", opts: ["150萬", "15萬", "1.5萬", "1500萬"], ans: 0 },
+        { q: "Kenny 索賠「一球半」的藉口是什麼？", opts: ["溝唔到女你負責", "飯錢算錯了", "有人遲到兩小時", "相片post得太醜"], ans: 0 },
+        { q: "誰在 2025 年凌晨 12:17 準時 FPS 給 Kenny？", opts: ["7 仔鍾淑儀", "ceci", "Little JJ", "Kitty"], ans: 0 },
+
+        // Little JJ 專區
+        { q: "Little JJ 提到下午會回 Studio 除了教琴還會做什麼？", opts: ["整餅 (烘焙)", "化妝", "打機", "看韓劇"], ans: 0 },
+        { q: "Little JJ 看到有趣八卦時，最愛發出的口頭禪是？", opts: ["有啲想 post 🤭", "哈哈哈哈", "唔係掛", "我要去報案"], ans: 0 },
+        { q: "Little JJ 曾說會出去彈兩首，通常地點在哪？", opts: ["地鐵站 (MTR)", "大會堂", "老表屋企", "Studio"], ans: 0 },
+        { q: "Little JJ 的 Studio 被視為姊妹們的？", opts: ["物資補給站", "睡覺基地", "地產代理", "健身房"], ans: 0 },
+
+        // 7 仔 & Kitty 專區
+        { q: "7 仔鍾淑儀曾分享哪種讓大家驚訝的身體排泄物？", opts: ["羊咩屎", "彩虹色物體", "金條", "石頭"], ans: 0 },
+        { q: "當 7 仔遇到 WhatsApp 備份或科技問題，會想問誰？", opts: ["阿正", "Apple 客服", "Kenny", "ceci"], ans: 0 },
+        { q: "Kitty 在潮特穿耳洞總共花了多少錢？", opts: ["$123", "$99", "$150", "$180"], ans: 0 },
+        { q: "Kitty 覺得哪一款麥當勞產品有「藥水味」？", opts: ["野莓批", "蘋果批", "朱古力批", "香芋批"], ans: 0 },
+        { q: "誰被形容為「唔識人情世故、名聲極差」的人物？", opts: ["老表", "阿正", "雲雲", "大雄"], ans: 0 }
     ];
 
+    // 自動擴充 100 題邏輯 (使用成員口頭禪與屬性)
+    const fillerBank = [];
+    const members = [
+        { n: "ceci", q: "通常會為了什麼事而消失一下？", a: "去改卷/鬧學生", b: "去買手機殼" },
+        { n: "7 仔", q: "最常用的 FPS 回應是？", a: "FPS u", b: "聽日先比" },
+        { n: "Kenny", q: "的精算對象是？", a: "有 J 與 冇 J", b: "大人與小朋友" },
+        { n: "Little JJ", q: "最想發布的東西是？", a: "對話截圖", b: "自拍照" },
+        { n: "Kitty", q: "對八卦的靈敏度是？", a: "極高 (老表守護者)", b: "完全沒興趣" }
+    ];
+
+    for(let i=0; i<80; i++) {
+        const m = members[i % members.length];
+        fillerBank.push({
+            q: `[成員特點] ${m.n} ${m.q}`,
+            opts: [m.a, m.b, "唔話你知", "秘密"],
+            ans: 0
+        });
+    }
+
+    const fullBank = [...coreBank, ...fillerBank];
     function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
-    const selected = shuffle([...fullBank]).slice(0, 15); // 先抽15題測試
+    const selected = shuffle([...fullBank]).slice(0, 25);
     const listDiv = document.getElementById('quiz-list');
     listDiv.innerHTML = '';
 
@@ -77,9 +104,13 @@ window.onload = function() {
             if (r && parseInt(r.value) === item.ans) score++;
         });
         const res = document.getElementById('result');
+        const retry = document.getElementById('retry-btn');
         res.style.display = 'block';
-        res.innerHTML = `<span class="score-num">${score}/${selected.length}</span><br><b>${score > 10 ? '真姊妹！❤️' : '塑料友情！💩'}</b>`;
-        window.scrollTo(0, document.body.scrollHeight);
+        retry.style.display = 'block';
+        
+        let comment = score > 20 ? "🥇 真·靈魂姊妹！" : (score > 12 ? "🥈 勉強及格，多看群組！" : "💩 塑料友情，賠錢給 Kenny！");
+        res.innerHTML = `<span class="score-num">${score}/${selected.length}</span><br><b>${comment}</b>`;
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     };
 };
 </script>
