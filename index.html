@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👭 女校女生與 7-11 友情大測驗 🐟🐎🐥</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fff5f8; color: #333; line-height: 1.6; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #ff69b4; }
+        .question { margin-bottom: 25px; border-bottom: 1px dashed #ffd1dc; padding-bottom: 15px; }
+        .question-text { font-weight: bold; font-size: 1.1em; margin-bottom: 10px; color: #d81b60; }
+        .options { list-style: none; padding: 0; }
+        .option { background: #fff0f5; margin: 8px 0; padding: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .option:hover { background: #ffc1d6; }
+        input[type="radio"], input[type="checkbox"] { margin-right: 10px; }
+        #submit-btn { display: block; width: 100%; padding: 15px; background-color: #ff69b4; color: white; border: none; border-radius: 10px; font-size: 1.2em; cursor: pointer; margin-top: 20px; }
+        #submit-btn:hover { background-color: #e91e63; }
+        #result { margin-top: 20px; padding: 20px; border-radius: 10px; display: none; text-align: center; font-size: 1.3em; font-weight: bold; }
+        .hint { font-size: 0.9em; color: #888; font-style: italic; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>👭 友情大測驗 🐟🐎🐥</h1>
+    <p style="text-align: center;">看看誰才是真正的回憶守護者！</p>
+    <form id="quizForm">
+        <div id="quiz-content"></div>
+        <button type="button" id="submit-btn" onclick="calculateScore()">交卷！看我的友情指數</button>
+    </form>
+    <div id="result"></div>
+</div>
+
+<script>
+    const questions = [
+        // 這裡放入前兩次生成的 40 題數據 (簡化示例，已整合關鍵題目)
+        { q: "在 2019 年初期，ceci 曾提到要送什麼禮物給陳俊宇？", options: ["情侶手機殼", "藍牙耳機", "鉛筆", "貓咪襪子"], correct: 0, type: "single" },
+        { q: "Kitty 在 2019 年 3 月去了哪裡穿耳洞？", options: ["潮特", "Mabelle", "深水埗", "葵涌廣場"], correct: 0, type: "single" },
+        { q: "ceci 卜思詩對哪種物品有明顯的「收集癖」？", options: ["文具 (特別是筆)", "口罩", "卡牌", "公仔"], correct: 0, type: "single" },
+        { q: "ceci 在前往 Little JJ 的 studio 途中發生了什麼尷尬事？", options: ["忘記帶 M 巾", "搭錯巴士", "忘了生日", "弄丟筆"], correct: 0, type: "single" },
+        { q: "是非題：Kitty 覺得 $123 穿耳洞非常昂貴。", options: ["正確", "錯誤"], correct: 1, type: "single" },
+        { q: "2025 聖誕飯局中，『有 J 』的人每人付多少？", options: ["$206", "$134", "$150", "$180"], correct: 1, type: "single" },
+        { q: "多選題：ceci 卜思詩偏愛的可愛角色？", options: ["P助", "粉紅兔兔", "塗改帶上的貓", "布甸狗"], correct: [0, 1, 2], type: "multi" }
+        // ... 此處可根據需要手動添加完整 40 題
+    ];
+
+    const quizContent = document.getElementById('quiz-content');
+    questions.forEach((q, index) => {
+        let html = `<div class="question">
+            <div class="question-text">${index + 1}. ${q.q}</div>
+            <ul class="options">`;
+        
+        q.options.forEach((opt, optIndex) => {
+            const inputType = q.type === "single" ? "radio" : "checkbox";
+            const name = `q${index}`;
+            html += `<li class="option">
+                <input type="${inputType}" name="${name}" value="${optIndex}"> ${opt}
+            </li>`;
+        });
+        
+        html += `</ul></div>`;
+        quizContent.innerHTML += html;
+    });
+
+    function calculateScore() {
+        let score = 0;
+        questions.forEach((q, index) => {
+            const selected = Array.from(document.querySelectorAll(`input[name="q${index}"]:checked`)).map(i => parseInt(i.value));
+            if (q.type === "single") {
+                if (selected[0] === q.correct) score++;
+            } else {
+                if (JSON.stringify(selected.sort()) === JSON.stringify(q.correct.sort())) score++;
+            }
+        });
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        let message = "";
+        const percentage = (score / questions.length) * 100;
+        
+        if (percentage >= 80) message = "💖 天啊！你們是真愛！";
+        else if (percentage >= 50) message = "😊 算你還有一點良心。";
+        else message = "❄️ 我們的友情是塑料做的嗎？";
+
+        resultDiv.innerHTML = `你的得分：${score} / ${questions.length}<br>${message}`;
+        window.scrollTo(0, document.body.scrollHeight);
